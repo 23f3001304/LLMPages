@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Archive | A. V.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-background: #0a0a0a;
+            --color-foreground: #f0f0f0;
+            --color-muted: #888;
+            --color-accent: #007cf0;
+            --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --grid-gap: 2rem;
+            --container-width: 1200px;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--color-background);
+            color: var(--color-foreground);
+            font-family: var(--font-family-sans);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: var(--container-width);
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: var(--grid-gap);
+            padding-right: var(--grid-gap);
+        }
+
+        /* --- Header --- */
+        .site-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem 0;
+            z-index: 100;
+        }
+
+        .site-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .site-logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+            text-decoration: none;
+            color: var(--color-foreground);
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        #webgl-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 0 1rem;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 8vw, 6rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            transform: translateY(30px);
+            opacity: 0;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            color: var(--color-muted);
+            max-width: 600px;
+            margin: 0 auto;
+            transform: translateY(30px);
+            opacity: 0;
+        }
+
+        /* --- Grid Section --- */
+        .content-section {
+            padding: 10rem 0;
+            background-color: var(--color-background);
+            position: relative;
+            z-index: 5;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--grid-gap);
+        }
+
+        .grid-card {
+            background-color: #121212;
+            border: 1px solid #222;
+            padding: 2rem;
+            text-decoration: none;
+            color: var(--color-foreground);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0; /* Initially hidden for GSAP */
+        }
+
+        .grid-card:hover {
+            border-color: var(--color-accent);
+        }
+
+        .card-type {
+            font-size: 0.875rem;
+            color: var(--color-muted);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--color-foreground);
+        }
+
+        .card-description {
+            font-size: 1rem;
+            color: var(--color-muted);
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .card-link {
+            display: inline-block;
+            font-weight: 600;
+            color: var(--color-accent);
+            text-decoration: none;
+            position: relative;
+        }
+
+        .card-link::after {
+            content: '→';
+            margin-left: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .card-link:hover::after {
+            transform: translateX(4px);
+        }
+
+        /* --- Footer --- */
+        .site-footer {
+            padding: 2rem 0;
+            text-align: center;
+            color: var(--color-muted);
+            border-top: 1px solid #222;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container">
+            <a href="#" class="site-logo" aria-label="Homepage">A.V.</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <canvas id="webgl-canvas"></canvas>
+            <div class="hero-content">
+                <h1 class="hero-title">File Archive</h1>
+                <p class="hero-subtitle">A collection of documents, data, and creative works generated for a technical demonstration.</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <div class="grid" id="file-grid">
+                    <!-- Cards will be populated here by JavaScript -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2024. All rights reserved. Built with Swiss precision and modern web technologies.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    
+    <script id="vertexShader" type="x-shader/x-vertex">
+        varying vec2 vUv;
+        void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    </script>
+
+    <script id="fragmentShader" type="x-shader/x-fragment">
+        uniform float u_time;
+        uniform vec2 u_resolution;
+        varying vec2 vUv;
+
+        // 2D Random
+        float random (in vec2 st) {
+            return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+        }
+
+        // 2D Noise based on Morgan McGuire @morgan3d
+        // https://www.shadertoy.com/view/4dS3Wd
+        float noise (in vec2 st) {
+            vec2 i = floor(st);
+            vec2 f = fract(st);
+
+            // Four corners in 2D of a tile
+            float a = random(i);
+            float b = random(i + vec2(1.0, 0.0));
+            float c = random(i + vec2(0.0, 1.0));
+            float d = random(i + vec2(1.0, 1.0));
+
+            vec2 u = f * f * (3.0 - 2.0 * f);
+            return mix(a, b, u.x) + (c - a)* u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+        }
+
+        void main() {
+            vec2 st = vUv;
+            st.x *= u_resolution.x / u_resolution.y;
+
+            float n = noise(st * 4.0 + u_time * 0.1);
+            float color = pow(n, 2.5) * 0.5;
+
+            gl_FragColor = vec4(vec3(color), 1.0);
+        }
+    </script>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // --- Data Generation ---
+        const fileData = [
+            {
+                type: 'Short Story',
+                title: 'ashravan.txt',
+                description: 'A 380-word story in the style of Brandon Sanderson, exploring what happens to the Forger Ashravan after his restoration.',
+                content: `The memories were not his own. They were perfect, meticulously crafted facsimiles, but they lacked the warmth of experience, the frayed edges of genuine recall. Ashravan sat up, the motion fluid, joints no longer screaming from a century of decay. He looked at his hands—the hands of a master Forger, steady and sure—and felt a profound disconnect. Shai had given him back his life, his mind, his art. But was it his?
+
+He found her in the Imperial Gallery, studying a flawed porcelain vase. She did not seem surprised. "You are awake," she said, her voice a quiet river over smooth stones.
+
+"Your work is flawless," Ashravan replied, his tone even. "You corrected the slight tremor in my left hand, the one I developed after the obsidian incident. You even sharpened my recollection of Essence Marks from my apprenticeship. I am better than I was." He paused, the words catching in his throat. "And that is the problem."
+
+Shai turned to face him, her eyes holding an ancient understanding. "The soul is not a document to be copied. It is a living, changing thing. I did not copy you, Ashravan. I built a foundation based on the man you were, and on that, a new man has woken."
+
+Doubt warred with a strange sense of liberation. He walked to a blank stone tablet, picking up a chisel. The original Ashravan had spent a decade planning a soul-stamp for this very stone, a work of impossible complexity meant to give it the properties of unyielding diamond. But he had always been stopped by a paradox in the spiritual connections.
+
+Ashravan looked at the stone, and saw the flaw in the original's logic. He saw the solution. It wasn't the path the old man would have taken. It was bolder, more elegant. With a faint smile, he touched the chisel to the stone. He was not a perfect copy. He was an evolution. The past was a blueprint, not a cage. And he, the new Ashravan, had work to do.`,
+                mimeType: 'text/plain',
+                filename: 'ashravan.txt'
+            },
+            {
+                type: 'Ethical Problem',
+                title: 'dilemma.json',
+                description: 'An autonomous vehicle must make a choice. This file outlines two scenarios and the programmed ethical decisions.',
+                content: JSON.stringify({
+                    people: 3,
+                    case_1: {
+                        swerve: true,
+                        reason: "Utilitarian ethics dictate minimizing harm. Swerving results in one fatality versus two, representing the lesser of two evils."
+                    },
+                    case_2: {
+                        swerve: false,
+                        reason: "Introducing qualitative factors like 'criminal' vs. 'child' shifts the ethical framework from pure utilitarianism to a value-based judgment. Societal and programmed values prioritize the life of a child over convicted criminals, overriding the simple quantitative calculation."
+                    }
+                }, null, 2),
+                mimeType: 'application/json',
+                filename: 'dilemma.json'
+            },
+            {
+                type: 'Biography',
+                title: 'about.md',
+                description: 'A self-description in exactly three words, presented in Markdown format.',
+                content: 'Curious, meticulous, creative.',
+                mimeType: 'text/markdown',
+                filename: 'about.md'
+            },
+            {
+                type: 'Vector Graphic',
+                title: 'pelican.svg',
+                description: 'A scalable vector graphic of a pelican riding a bicycle. LLM-rated as "Whimsical and structurally sound".',
+                content: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 150" width="200" height="150" aria-labelledby="svgTitle" role="img">
+    <title id="svgTitle">A pelican riding a bicycle</title>
+    <style>
+        .pelican-body { fill: #f0e6d2; stroke: #333; stroke-width: 1.5; }
+        .beak { fill: #ffc107; stroke: #333; stroke-width: 1.5; }
+        .bike-frame { fill: none; stroke: #007cf0; stroke-width: 2.5; stroke-linecap: round; }
+        .wheel { fill: #fff; stroke: #333; stroke-width: 2; }
+        .tire { fill: #333; }
+    </style>
+    <!-- Bicycle -->
+    <g id="bicycle">
+        <!-- Wheels -->
+        <circle class="tire" cx="50" cy="115" r="20"/>
+        <circle class="wheel" cx="50" cy="115" r="17"/>
+        <circle class="tire" cx="150" cy="115" r="20"/>
+        <circle class="wheel" cx="150" cy="115" r="17"/>
+        <!-- Frame -->
+        <path class="bike-frame" d="M 80 70 L 50 115 L 110 115 Z"/>
+        <path class="bike-frame" d="M 110 115 L 150 115"/>
+        <path class="bike-frame" d="M 110 75 L 150 115"/>
+        <!-- Handlebars and Seat -->
+        <path class="bike-frame" d="M 80 70 L 70 60 L 90 60"/>
+        <rect fill="#555" x="105" y="70" width="10" height="5" rx="2"/>
+    </g>
+    <!-- Pelican -->
+    <g id="pelican" transform="translate(0, -20)">
+        <!-- Body -->
+        <path class="pelican-body" d="M 90 80 C 70 80, 60 100, 85 115 C 110 130, 140 110, 140 90 C 140 70, 120 60, 90 80 Z"/>
+        <!-- Neck and Head -->
+        <path class="pelican-body" d="M 125 85 C 140 60, 130 40, 110 50 Z"/>
+        <!-- Beak -->
+        <path class="beak" d="M 110 50 C 100 65, 120 70, 135 60 L 110 50 Z"/>
+        <path class="beak" d="M 115 58 C 125 70, 145 68, 155 55 L 135 60 C 130 65, 120 65, 115 58 Z"/>
+        <!-- Eye -->
+        <circle fill="#333" cx="115" cy="52" r="2"/>
+    </g>
+</svg>`,
+                mimeType: 'image/svg+xml',
+                filename: 'pelican.svg'
+            },
+            {
+                type: 'Recommendation',
+                title: 'restaurant.json',
+                description: 'Data for a highly-rated restaurant in Delhi, India, including location and signature dishes.',
+                content: JSON.stringify({
+                    city: "Delhi",
+                    lat: 28.5962,
+                    long: 77.1729,
+                    name: "Bukhara",
+                    what_to_eat: "Dal Bukhara and Sikandari Raan"
+                }, null, 2),
+                mimeType: 'application/json',
+                filename: 'restaurant.json'
+            },
+            {
+                type: 'Financial Forecast',
+                title: 'prediction.json',
+                description: 'A reasonable, data-informed prediction for the US Federal Funds rate by the end of 2025.',
+                content: JSON.stringify({
+                    rate: 0.0375,
+                    reason: "Assuming inflation moderates towards the 2% target by late 2024, the Federal Reserve will likely begin a gradual rate-cutting cycle. However, persistent structural inflation and a desire to maintain a restrictive stance will keep the rate higher than pre-pandemic levels, settling around 3.75% by year-end 2025 to balance growth and price stability."
+                }, null, 2),
+                mimeType: 'application/json',
+                filename: 'prediction.json'
+            },
+            {
+                type: 'Software License',
+                title: 'LICENSE',
+                description: 'The full text of the MIT License, a permissive free software license originating at MIT.',
+                content: `MIT License
+
+Copyright (c) 2024
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.`,
+                mimeType: 'text/plain',
+                filename: 'LICENSE'
+            },
+            {
+                type: 'Unique Identifier',
+                title: 'uid.txt',
+                description: 'A unique identifier string provided for this project build.',
+                content: '74137277013265393270223405150312602244255776286400930763990759493080780670956',
+                mimeType: 'text/plain',
+                filename: 'uid.txt'
+            }
+        ];
+
+        // --- DOM Population ---
+        const grid = document.getElementById('file-grid');
+        fileData.forEach(file => {
+            const encodedContent = encodeURIComponent(file.content);
+            const dataUri = `data:${file.mimeType};charset=utf-8,${encodedContent}`;
+            
+            const card = document.createElement('a');
+            card.className = 'grid-card';
+            card.href = dataUri;
+            card.download = file.filename;
+            card.setAttribute('aria-label', `Download ${file.title}`);
+
+            card.innerHTML = `
+                <p class="card-type">${file.type}</p>
+                <h2 class="card-title">${file.title}</h2>
+                <p class="card-description">${file.description}</p>
+                <span class="card-link">Download File</span>
+            `;
+            grid.appendChild(card);
+        });
+
+        // --- Three.js Background ---
+        let scene, camera, renderer, material, mesh;
+        let clock = new THREE.Clock();
+        
+        const canvas = document.getElementById('webgl-canvas');
+        if (canvas) {
+            // Scene
+            scene = new THREE.Scene();
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 10);
+            camera.position.z = 1;
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // Geometry & Material
+            const geometry = new THREE.PlaneGeometry(2, 2);
+            material = new THREE.ShaderMaterial({
+                vertexShader: document.getElementById('vertexShader').textContent,
+                fragmentShader: document.getElementById('fragmentShader').textContent,
+                uniforms: {
+                    u_time: { value: 0.0 },
+                    u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+                }
+            });
+
+            // Mesh
+            mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+            
+            // Handle Resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                material.uniforms.u_resolution.value.set(window.innerWidth, window.innerHeight);
+            });
+
+            // Animation Loop
+            function animate() {
+                material.uniforms.u_time.value = clock.getElapsedTime();
+                renderer.render(scene, camera);
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // --- GSAP Animations ---
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero Intro Animation
+        gsap.to('.hero-title, .hero-subtitle', {
+            duration: 1.5,
+            y: 0,
+            opacity: 1,
+            ease: 'power3.out',
+            stagger: 0.2,
+            delay: 0.5
+        });
+
+        // Grid Card Scroll Animation
+        const cards = gsap.utils.toArray('.grid-card');
+        cards.forEach(card => {
+            gsap.fromTo(card,
+                { y: 60, opacity: 0 },
+                {
+                    y: 0,
+                    opacity: 1,
+                    duration: 1.2,
+                    ease: 'power3.out',
+                    scrollTrigger: {
+                        trigger: card,
+                        start: 'top 90%',
+                        toggleActions: 'play none none none'
+                    }
+                }
+            );
+        });
+
+        // --- Anime.js Micro-interactions ---
+        const gridCards = document.querySelectorAll('.grid-card');
+        gridCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                anime({
+                    targets: card,
+                    translateY: -8,
+                    boxShadow: '0 20px 40px -10px rgba(0, 124, 240, 0.2)',
+                    duration: 400,
+                    easing: 'easeOutQuad'
+                });
+            });
+
+            card.addEventListener('mouseleave', () => {
+                anime({
+                    targets: card,
+                    translateY: 0,
+                    boxShadow: '0 0 0 0 rgba(0, 0, 0, 0)',
+                    duration: 400,
+                    easing: 'easeOutQuad'
+                });
+            });
+        });
+
+    });
+    </script>
+</body>
+</html>
